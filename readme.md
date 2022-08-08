@@ -11,3 +11,13 @@ When implementing a new feature or fixing a bug, please create a new pull reques
 ## First setup
 
 **[TODO 05/01/2018 @vanessa-cooper]:** _It's been a while since anyone ran a fresh copy of this repo. I think it's worth documenting the steps needed to install and run the repo on a new machine?_
+## First Step
+Install and update to wsl2 using the official documentation.
+
+## Second step 
+Install docker desktop from the docker website
+
+##Third step
+Clone the specified repo without forking it on your local machine.
+
+##Follow the instructions from there on as given in the quest.
