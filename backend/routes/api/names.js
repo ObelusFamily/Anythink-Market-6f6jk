@@ -4,8 +4,8 @@ var Item = mongoose.model('Item');
 
 //get list of names
 router.get('/', function (req, res, next) {
-    Item.find().distinct('title').then(function (names) {
-        return res.json(names);
+    Item.find().distinct('title').then(function (titles) {
+        return res.json(titles);
     }).catch(next);
 });
 module.exports = router;
