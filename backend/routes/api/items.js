@@ -170,6 +170,8 @@ router.get("/:item", auth.optional, function(req, res, next) {
     .catch(next);
 });
 
+
+
 // update item
 router.put("/:item", auth.required, function(req, res, next) {
   User.findById(req.payload.id).then(function(user) {
@@ -331,5 +333,6 @@ router.delete("/:item/comments/:comment", auth.required, function(
     res.sendStatus(403);
   }
 });
+
 
 module.exports = router;

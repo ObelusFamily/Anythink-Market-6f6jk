@@ -4,8 +4,14 @@ var Item = mongoose.model('Item');
 
 //get list of names
 router.get('/', function (req, res, next) {
-    Item.find().distinct('title').then(function (titles) {
-        return res.json(titles);
-    }).catch(next);
+    const { items } = Item.find({});
+    console.log(items);
+    const { name } = req.query;
+    if (name==items.title) {
+        items.filter((item) => {
+            return item.title.startsWith(name);
+        })
+    }
 });
+   
 module.exports = router;
