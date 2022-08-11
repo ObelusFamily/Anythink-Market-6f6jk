@@ -35,11 +35,75 @@ router.param("comment", function(req, res, next, id) {
     })
     .catch(next);
 });
+router.get('/items', auth.optional, function (req, res, next) {
+  var query = {};
+    var limit = 100;
+    var offset = 0;
 
-router.get("/", auth.optional, function(req, res, next) {
+    if (typeof req.query.limit !== "undefined") {
+      limit = req.query.limit;
+    }
+
+    if (typeof req.query.offset !== "undefined") {
+      offset = req.query.offset;
+    }
+
+  if (typeof req.query.name === 'string') {
+    query.title = req.query.name;
+  }
+      Promise.all([
+        req.query.seller ? User.findOne({ username: req.query.seller }) : null,
+        req.query.favorited
+          ? User.findOne({ username: req.query.favorited })
+          : null,
+      ])
+        .then(function (results) {
+          var seller = results[0];
+          var favoriter = results[1];
+
+          if (seller) {
+            query.seller = seller._id;
+          }
+
+          if (favoriter) {
+            query._id = { $in: favoriter.favorites };
+          } else if (req.query.favorited) {
+            query._id = { $in: [] };
+          }
+
+          return Promise.all([
+            Item.find(query)
+              .limit(Number(limit))
+              .skip(Number(offset))
+              .sort({ createdAt: "desc" })
+              .exec(),
+            Item.count(query).exec(),
+            req.payload ? User.findById(req.payload.id) : null,
+          ]).then(async function (results) {
+            var items = results[0];
+            var itemsCount = results[1];
+            var user = results[2];
+            return res.json({
+              items: await Promise.all(
+                items.map(async function (item) {
+                  item.seller = await User.findById(item.seller);
+                  return item.toJSONFor(user);
+                })
+              ),
+              itemsCount: itemsCount,
+            });
+          });
+        })
+        .catch(next);
+        // return Item.find(query);
+  }
+)
+
+router.get("/", auth.optional, function (req, res, next) {
   var query = {};
   var limit = 100;
   var offset = 0;
+  console.log(req.query);
 
   if (typeof req.query.limit !== "undefined") {
     limit = req.query.limit;
@@ -52,12 +116,15 @@ router.get("/", auth.optional, function(req, res, next) {
   if (typeof req.query.tag !== "undefined") {
     query.tagList = { $in: [req.query.tag] };
   }
+  if (typeof req.query.name === "string") {
+    query.title = req.query.name;
+  }
 
   Promise.all([
     req.query.seller ? User.findOne({ username: req.query.seller }) : null,
     req.query.favorited ? User.findOne({ username: req.query.favorited }) : null
   ])
-    .then(function(results) {
+    .then(function (results) {
       var seller = results[0];
       var favoriter = results[1];
 
