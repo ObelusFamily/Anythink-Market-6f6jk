@@ -48,7 +48,7 @@ router.get('/items', auth.optional, function (req, res, next) {
       offset = req.query.offset;
     }
 
-  if (typeof req.query.name === 'string') {
+  if (typeof req.query.name === "string") {
     query.title = req.query.name;
   }
       Promise.all([
