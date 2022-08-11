@@ -5,7 +5,6 @@ router.use('/profiles', require('./profiles'));
 router.use('/items', require('./items'));
 router.use('/tags', require('./tags'));
 router.use('/ping', require('./ping'));
-
 router.use(function(err, req, res, next){
   if(err.name === 'ValidationError'){
     return res.status(422).json({

@@ -36,10 +36,12 @@ router.param("comment", function(req, res, next, id) {
     .catch(next);
 });
 
-router.get("/", auth.optional, function(req, res, next) {
+
+router.get("/", auth.optional, function (req, res, next) {
   var query = {};
   var limit = 100;
   var offset = 0;
+  console.log(req.query);
 
   if (typeof req.query.limit !== "undefined") {
     limit = req.query.limit;
@@ -52,12 +54,14 @@ router.get("/", auth.optional, function(req, res, next) {
   if (typeof req.query.tag !== "undefined") {
     query.tagList = { $in: [req.query.tag] };
   }
-
+  if (typeof req.query.name === 'string') {
+    query.title = req.query.name;
+}
   Promise.all([
     req.query.seller ? User.findOne({ username: req.query.seller }) : null,
     req.query.favorited ? User.findOne({ username: req.query.favorited }) : null
   ])
-    .then(function(results) {
+    .then(function (results) {
       var seller = results[0];
       var favoriter = results[1];
 
